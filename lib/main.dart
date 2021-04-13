@@ -44,7 +44,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
+    print(state);
   }
 
   @override
@@ -175,9 +175,10 @@ extension CallBacks on _HomeState {
 
   }
 
-  ///
+  /// ### store Url 버튼의 온탭 이벤트
+  /// 사용가능하지 않은 어플리케이션의 경우 play store 로 연결
   void _onTapPlayStore(SyncTarget target) {
-
+    installManger.openStoreUrl(target);
   }
 
 }

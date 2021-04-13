@@ -31,6 +31,14 @@ class InstallManager {
     }
   }
 
+  /// ### store URL 을 통해 store 로 이동
+  void openStoreUrl(SyncTarget target){
+    if (Platform.isAndroid) {
+      _channel.invokeMethod('open#store', {'target' : target.index});
+    } else {
+      _channel.invokeMethod('open#store');
+    }
+  }
 
 }
 

@@ -1,8 +1,10 @@
 package co.kr.hunet.pedometer_sample;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -17,18 +19,29 @@ public class InstallManager implements MethodChannel.MethodCallHandler {
     private static final int INACTIVATE = 1;
     private static final int NOT_INSTALL = 2;
 
+    // 연동 대상앱들의 패키지명
+    private static final String SAMSUNG_HEALTH_PACKAGE_NAME = "com.sec.android.app.shealth";
+    private static final String GOOGLE_FITNESS_PACKAGE_NAME = "com.google.android.apps.fitness";
+
     private final Context context;
 
     InstallManager(Context context) {
         this.context = context;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         switch (call.method){
             case "syncApp#installed" :
                 int[] flags = getAvailableSyncApp();
                 result.success(flags);
+                break;
+            case "open#store":
+                int type = call.argument("target");
+                String target = type == 0 ? SAMSUNG_HEALTH_PACKAGE_NAME : GOOGLE_FITNESS_PACKAGE_NAME;
+                openStoreUrl(target);
+                result.success(null);
                 break;
         }
     }
@@ -48,9 +61,7 @@ public class InstallManager implements MethodChannel.MethodCallHandler {
      * @return 설치상태를 의미하는 flag들. 
      */
     private int[] getAvailableSyncApp() {
-        final String samsungHealthPackageName = "com.sec.android.app.shealth";
-        final String googleFitnessPackageName = "com.google.android.apps.fitness";
-        String[] checkList = new String[]{samsungHealthPackageName, googleFitnessPackageName};
+        String[] checkList = new String[]{SAMSUNG_HEALTH_PACKAGE_NAME, GOOGLE_FITNESS_PACKAGE_NAME};
 
         PackageManager pm = context.getPackageManager();
         int[] installFlags =  new int[2];
@@ -87,6 +98,25 @@ public class InstallManager implements MethodChannel.MethodCallHandler {
             return false;
         }
     }
+
+    /**
+     * 연동하고자 하는 어플이 사용가능하지 않은 경우, play store 로 연결해서 설치 및 사용을 유도한다.
+     *
+     * @param packageName 연동하고자 하는 어플리케이션의 패키지명
+     */
+    private void openStoreUrl(String packageName) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + packageName));
+        intent.setPackage("com.android.vending");
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            log("play store 없는 에뮬레이터에서 실행하려다 딱걸림");
+        }
+    }
+
+
 
     private void log(String msg) {
         Log.i("CHECK#INSTALL", msg);
