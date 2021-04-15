@@ -367,6 +367,34 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             ),
           ),
         ),
+
+        // data viewer
+        _healthHelper != null ? Container(
+          margin: EdgeInsets.only(top: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '오늘의 걸음수',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+
+              SizedBox(width: 8,),
+
+              Text(
+                _healthStep.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                ),
+              ),
+            ],
+          ),
+        ) : SizedBox(),
       ],
     ),
   );
@@ -409,6 +437,7 @@ extension CallBacks on _HomeState {
     }
     int step = await _healthHelper!.getTodayStep();
     print("오늘 총 걸음수: $step}");
+    if (mounted) setState(() => _healthStep = step);
   }
 }
 
