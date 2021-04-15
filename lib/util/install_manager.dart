@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 import 'dart:io' show Platform;
 
-import 'package:pedometer_sample/dto/application_info.dart';
+import 'package:pedometer_sample/model/application_info.dart';
+
 
 /// ## 각 플렛폼에서 연동하고자 하는 어플리케이션이 설치 됫는지 확인하는 클래스
 /// Android 의 경우, 삼성 헬스와 구글 핏의 설치 여부를 확인하고, iOS 의 경우, 건강 얍의 설치여부를 확인한다.
